@@ -41,7 +41,8 @@ class msgfplus2csv_v1_2_1( ursgal.UNode ):
                 'arc_independent' : {
                     'exe'     : 'MzidToTsvConverter.exe',
                     'url'     : '',
-                    'zip_md5' : 'bddd04bcba2a72429f7d892a09e98ded'
+                    'zip_md5' : 's'
+
                 },
             },
         },
