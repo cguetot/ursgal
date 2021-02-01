@@ -80,6 +80,7 @@ class msamanda_2_0_0_17442(msamanda):
             self.params['output_dir_path'],
             self.params['output_file']
         )
+        self.params['translations']['data_folder'] = self.params['output_dir_path']
 
         # if translations['unimod_file_incl_path']['unimod_file_incl_path'] == '' :
         self.params['translations']['unimod_file_incl_path'] = os.path.join(
@@ -212,3 +213,61 @@ class msamanda_2_0_0_17442(msamanda):
                     file2write
                 )
         return self.params
+
+    def format_templates( self ):
+        self.params['translations']['exe_dir_path'] = os.path.dirname(self.exe)
+
+        templates = {
+            '_settings.xml' : '''<?xml version="1.0" encoding="utf-8" ?>
+<settings>
+    <search_settings>
+        <enzyme specificity="{semi_enzyme}">{enzyme}</enzyme>
+        <missed_cleavages>{max_missed_cleavages}</missed_cleavages>
+        <modifications>
+            {modifications}
+        </modifications>
+        <instrument>{score_ions}</instrument>
+        <ms1_tol unit="{precursor_mass_tolerance_unit}">{precursor_mass_tolerance}</ms1_tol>
+        <ms2_tol unit="{frag_mass_tolerance_unit}">{frag_mass_tolerance}</ms2_tol>
+        <max_rank>{num_match_spec}</max_rank>
+        <generate_decoy>{engine_internal_decoy_generation}</generate_decoy>
+        <PerformDeisotoping>{deisotope_spec}</PerformDeisotoping>
+        <MaxNoModifs>{max_num_per_mod}</MaxNoModifs>
+        <MaxNoDynModifs>{max_num_mods}</MaxNoDynModifs>
+        <MaxNumberModSites>{max_num_mod_sites}</MaxNumberModSites>
+        <MaxNumberNeutralLoss>{max_num_neutral_loss}</MaxNumberNeutralLoss>
+        <MaxNumberNeutralLossModifications>{max_num_neutral_loss_mod}</MaxNumberNeutralLossModifications>
+        <MinimumPepLength>{min_pep_length}</MinimumPepLength>
+    </search_settings>
+
+  <basic_settings>
+    <instruments_file>{output_file_incl_path}_instrument.xml</instruments_file>
+    <unimod_file>{unimod_file_incl_path}</unimod_file>
+    <enzyme_file>{output_file_incl_path}_enzymes.xml</enzyme_file>
+    <monoisotopic>{precursor_mass_type}</monoisotopic>
+    <considered_charges>{considered_charges}</considered_charges>
+    <LoadedProteinsAtOnce>{batch_size}</LoadedProteinsAtOnce>
+    <LoadedSpectraAtOnce>{batch_size_spectra}</LoadedSpectraAtOnce>
+    <data_folder>{data_folder}</data_folder>
+  </basic_settings>
+</settings>
+'''.format(**self.params['translations']),
+
+        '_instrument.xml' : '''<?xml version="1.0"?>
+<!-- possible values are "a", "b", "c", "x", "y", "z", "H2O", "NH3", "IMM", "z+1", "z+2", "INT" (for internal fragments) -->
+<instruments>
+  <setting name="{score_ions}">
+{instruments_file_input}
+'''.format(**self.params['translations']),
+
+        '_enzymes.xml' : '''<?xml version="1.0" encoding="utf-8" ?>
+<enzymes>
+  <enzyme>
+    <name>{enzyme_name}</name>
+    <cleavage_sites>{enzyme_cleavage}</cleavage_sites>
+    <inhibitors>{enzyme_inhibitors}</inhibitors>
+    <position>{enzyme_position}</position>
+  </enzyme>
+</enzymes>'''.format(**self.params['translations']),
+            }
+        return templates
